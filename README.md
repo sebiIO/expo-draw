@@ -1,5 +1,5 @@
 # React Native Draw
-React native draw tool using react-native-svg.
+Expo draw tool using react-native-svg. (Forked from [rn-draw](https://github.com/jayeszee/rn-draw))
 
 [![rn-draw.gif](https://s1.gifyu.com/images/rn-draw.gif)](https://gifyu.com/image/pLIr)
 
@@ -8,25 +8,18 @@ React native draw tool using react-native-svg.
 First install react-native-svg and follow the directions to properly set it up:
 https://github.com/react-native-community/react-native-svg
 
-Install rn-draw with `npm install -S rn-draw`  or  `yarn add rn-draw`
+Install rn-draw with `npm install -S expo-draw`
 
 ### Expo Applications
 Make sure you follow the proper guidelines on https://expo.io to set up your react native application with expo sdk.
 
-Install rn-draw with `npm install -S rn-draw`  or  `yarn add rn-draw`
-
-### Compatibility
-expo version <= 21 or react native <= 48 w/ react 16 alpha 12 --- rn-draw@0.0.4
-
-expo version = 22 or react native = 49 w/ react 16 beta 5 --- >= rn-draw@0.0.5
-
-
+Install rn-draw with `npm install -S expo-draw`
 
 # How to use
 ```
-import RNDraw from 'rn-draw'
+import ExpoDraw from 'expo-draw'
   
-<RNDraw
+<ExpoDraw
   strokes={[]}
   containerStyle={{backgroundColor: 'rgba(0,0,0,0.01)'}}
   rewind={(undo) => {this._undo = undo}}
@@ -50,13 +43,32 @@ import RNDraw from 'rn-draw'
 **clear** [Func] - a function for passing the draw component's clear functionality
 
 **onChangeStrokes** [Func] - callback that is called when the draw changes.
+```
 
+# Tips when implementing
+
+You can save a screenshot of your canvas using **takeSnapshotAsync**, the method from expo, like so:
+
+```
+import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
   
-## Work in progress
+mySaveFx = async () => {
+		const signatureResult = await takeSnapshotAsync(this.refOfExpoDrawElement, {
+			result: 'tmpfile',
+			quality: 0.5,
+			format: 'png',
+		});
 
-Smoothing out pen strokes (curves) 
+    //The output will be a local tmpfile (uri)[String], with the current lines that were drawn. Therefore, you can save it or so! ;)
+    console.log(signatureResult);
+}
 
-Image backgrounds
+```
 
-Optimizations in pointer
 
+# Context on why I forked
+As of the time I was implementing rn-draw, with expo SDK 36.0.0. I faced an error on the Svg.G dependencie, which I then fixed for my expo application.
+
+So, I hope I can help whoever is facing issues with the rn-draw for expo. If you want to use the original lib, here it is! -> [rn-draw](https://github.com/jayeszee/rn-draw)
+
+**Observation:** I'm using it for digital signature capturing in my app, if you are looking for something like this, I would say this lib is pretty ok for the mentioned purpose!
