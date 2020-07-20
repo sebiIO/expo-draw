@@ -4,11 +4,15 @@
   "description": "Drawing library for expo using svg.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no tests currently\" && exit 1"
+    "test": "echo \"Error: no tests currently\" && exit 1",
+    "deploy": "npm publish"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/MarangoniEduardo/expo-draw.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@MarangoniEduardo"
   },
   "keywords": [
     "react-native",
