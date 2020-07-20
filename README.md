@@ -47,27 +47,27 @@ import ExpoDraw from 'expo-draw'
 
 # Tips when implementing
 
-You can save a screenshot of your canvas using **takeSnapshotAsync**, the method from expo, like so:
+You can save a screenshot of your canvas using `takeSnapshotAsync`, the method from expo, like so:
 
 ```
 import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
   
 mySaveFx = async () => {
-		const signatureResult = await takeSnapshotAsync(this.refOfExpoDrawElement, {
-			result: 'tmpfile',
-			quality: 0.5,
-			format: 'png',
-		});
+	const signatureResult = await takeSnapshotAsync(this.refOfExpoDrawElement, {
+		result: 'tmpfile',
+		quality: 0.5,
+		format: 'png',
+	});
 
-    //The output will be a local tmpfile (uri)[String], with the current lines that were drawn. Therefore, you can save it or so! ;)
-    console.log(signatureResult);
+  //The output will be a local tmpfile (uri)[String], with the current lines that were drawn. Therefore, you can save it or so! ;)
+  console.log(signatureResult);
 }
 
 ```
 
 
 # Context on why I forked
-As of the time I was implementing rn-draw, with expo SDK 36.0.0. I faced an error on the Svg.G dependencie, which I then fixed for my expo application.
+As of the time I was implementing rn-draw, with expo SDK 36.0.0. I faced an error on the Svg.G dependency, which I then fixed for my expo application.
 
 So, I hope I can help whoever is facing issues with the rn-draw for expo. If you want to use the original lib, here it is! -> [rn-draw](https://github.com/jayeszee/rn-draw)
 
