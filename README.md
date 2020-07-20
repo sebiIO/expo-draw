@@ -5,15 +5,9 @@ Expo draw tool using react-native-svg. (Forked from [rn-draw](https://github.com
 
 # Installation
 
-First install react-native-svg and follow the directions to properly set it up:
-https://github.com/react-native-community/react-native-svg
+First install [react-native-svg](https://github.com/react-native-community/react-native-svg) `expo install react-native-svg`
 
-Install rn-draw with `npm install -S expo-draw`
-
-### Expo Applications
-Make sure you follow the proper guidelines on https://expo.io to set up your react native application with expo sdk.
-
-Install rn-draw with `npm install -S expo-draw`
+Then install expo-draw with `npm install -S expo-draw`
 
 # How to use
 ```
