@@ -62,7 +62,7 @@ export default class Whiteboard extends React.Component {
     }
 
     onTouch(evt) {
-        if(this.props.enabled === false) return;
+        if(this.props.enabled == false) return;
         let x, y, timestamp
         [x, y, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
         let newPoint = new Point(x, y, timestamp)
