@@ -93,12 +93,12 @@ export default class Whiteboard extends React.Component {
         this.state.pen.addStroke(this.state.currentPoints)
 
         this.setState({
-            previousStrokes: [...this.state.previousStrokes, points],
+            previousStrokes: [...strokes, points],
             strokes: [],
             currentPoints: [],
             tracker: this.state.tracker + 1,
         })
-        this._onChangeStrokes([...this.state.previousStrokes, points])
+        this._onChangeStrokes([...strokes, points])
     }
 
     _onLayoutContainer = (e) => {
