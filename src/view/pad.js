@@ -110,6 +110,8 @@ export default class Whiteboard extends React.Component {
     }
 
     render() {
+        var props = this.props.enabled != false ? this._panResponder.panHandlers : {}
+
         return (
             <View
                 onLayout={this._onLayoutContainer}
@@ -117,7 +119,7 @@ export default class Whiteboard extends React.Component {
                     styles.drawContainer,
                     this.props.containerStyle,
                 ]}>
-                <View style={styles.svgContainer} {...this._panResponder.panHandlers}>
+                <View style={styles.svgContainer} {...props}>
                     <Svg style={styles.drawSurface}>
                         <G>
                             {this.state.previousStrokes.map((e) => {
