@@ -8,9 +8,10 @@ import Svg, { G, Path } from 'react-native-svg';
 import Pen from '../tools/pen'
 import Point from '../tools/point'
 
-export default class Whiteboard extends React.Componen {
+export default class Whiteboard extends React.Component {
 
-    componentDidMount(props) {
+    constructor(props) {
+        super(props)
         this.state = {
             tracker: 0,
             currentPoints: [],
@@ -61,7 +62,7 @@ export default class Whiteboard extends React.Componen {
     }
 
     onTouch(evt) {
-        if(!this.props.enabled) return;
+        if(this.props.enabled === false) return;
         let x, y, timestamp
         [x, y, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
         let newPoint = new Point(x, y, timestamp)
@@ -105,7 +106,6 @@ export default class Whiteboard extends React.Componen {
     }
 
     _onChangeStrokes = (strokes) => {
-        console.log(strokes)
         if (this.props.onChangeStrokes) this.props.onChangeStrokes(strokes)
     }
 
@@ -120,7 +120,7 @@ export default class Whiteboard extends React.Componen {
                 <View style={styles.svgContainer} {...this._panResponder.panHandlers}>
                     <Svg style={styles.drawSurface}>
                         <G>
-                            {this.state.previousStrokes.map((e) => {
+                            {this.state.previousStrokes.map((e) => 
                                 <Path
                                     key={this.state.tracker}
                                     d={this.state.pen.pointsToSvg(e)}
@@ -128,7 +128,7 @@ export default class Whiteboard extends React.Componen {
                                     strokeWidth={this.props.strokeWidth || 4}
                                     fill="none"
                                 />
-                            })
+                                )
                             }
                             <Path
                                 key={this.state.tracker}
