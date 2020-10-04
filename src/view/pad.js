@@ -62,12 +62,12 @@ export default class Whiteboard extends React.Component {
     }
 
     onTouch(evt) {
-        if(this.props.enabled == false) return;
+        if (this.props.enabled == false) return;
         let x, y, timestamp
         [x, y, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
-        let newPoint = new Point(x, y, timestamp)
+
         let newCurrentPoints = this.state.currentPoints
-        newCurrentPoints.push(newPoint)
+        newCurrentPoints.push({ x, y, timestamp })
 
         this.setState({
             previousStrokes: this.state.previousStrokes,
@@ -120,15 +120,23 @@ export default class Whiteboard extends React.Component {
                 <View style={styles.svgContainer} {...this._panResponder.panHandlers}>
                     <Svg style={styles.drawSurface}>
                         <G>
-                            {this.state.previousStrokes.map((e) => 
-                                <Path
-                                    key={this.state.tracker}
-                                    d={this.state.pen.pointsToSvg(e)}
+                            {this.state.previousStrokes.map((e) => {
+                                var points = [];
+
+                                for(var i in e) {
+                                    let newPoint = new Point(e[i].x, e[i].y, e[i].timestamp)
+                                    points.push(newPoint)
+                                }
+
+                                return (<Path
+                                    key={e[0].timestamp}
+                                    d={this.state.pen.pointsToSvg(points)}
                                     stroke={this.props.color || '#000000'}
                                     strokeWidth={this.props.strokeWidth || 4}
                                     fill="none"
-                                />
-                                )
+                                />)
+                            }
+                            )
                             }
                             <Path
                                 key={this.state.tracker}
