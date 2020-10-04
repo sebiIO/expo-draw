@@ -8,17 +8,15 @@ import {
 import Svg, { G, Path } from 'react-native-svg';
 import Pen from '../tools/pen'
 import Point from '../tools/point'
-const { OS } = Platform
 
-export default class Whiteboard extends React.Component {
+export default class Whiteboard extends React.Componen {
 
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     this.state = {
       tracker: 0,
       currentPoints: [],
-      previousStrokes: [],
-      newStroke: [],
+      previousStrokes: props.strokes || [],
       pen: new Pen(),
     }
 
@@ -50,16 +48,18 @@ export default class Whiteboard extends React.Component {
       currentPoints: [],
       tracker: this.state.tracker - 1,
     })
+
+    this._onChangeStrokes([...strokes])
   }
 
   clear = () => {
     this.setState({
       previousStrokes: [],
       currentPoints: [],
-      newStroke: [],
       tracker: 0,
     })
     this.state.pen.clear()
+    this._onChangeStrokes([])
   }
 
   onTouch(evt) {
@@ -87,27 +87,26 @@ export default class Whiteboard extends React.Component {
   onResponderRelease() {
     let strokes = this.state.previousStrokes
     if (this.state.currentPoints.length < 1) return
-    let newElement = (
-      <Path
-        key={this.state.tracker}
-        d={this.state.pen.pointsToSvg(this.state.currentPoints)}
-        stroke={this.props.color || '#000000'}
-        strokeWidth={this.props.strokeWidth || 4}
-        fill="none"
-      />
-    )
+
+    var points = this.state.currentPoints
 
     this.state.pen.addStroke(this.state.currentPoints)
 
     this.setState({
-      previousStrokes: [...this.state.previousStrokes, newElement],
+      previousStrokes: [...this.state.previousStrokes, points],
+      strokes: [],
       currentPoints: [],
       tracker: this.state.tracker + 1,
     })
+    this._onChangeStrokes([...this.state.previousStrokes, points])
   }
 
   _onLayoutContainer = (e) => {
     this.state.pen.setOffset(e.nativeEvent.layout);
+  }
+
+  _onChangeStrokes = (strokes) => {
+    if (this.props.onChangeStrokes) this.props.onChangeStrokes(strokes)
   }
 
   render() {
@@ -121,7 +120,16 @@ export default class Whiteboard extends React.Component {
         <View style={styles.svgContainer} {...this._panResponder.panHandlers}>
           <Svg style={styles.drawSurface}>
             <G>
-              {this.state.previousStrokes}
+              {this.state.previousStrokes.map((e) => {
+                <Path
+                  key={this.state.tracker}
+                  d={this.state.pen.pointsToSvg(e)}
+                  stroke={this.props.color || '#000000'}
+                  strokeWidth={this.props.strokeWidth || 4}
+                  fill="none"
+                />
+              })
+              }
               <Path
                 key={this.state.tracker}
                 d={this.state.pen.pointsToSvg(this.state.currentPoints)}

@@ -9,10 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MarangoniEduardo/expo-draw.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@MarangoniEduardo"
+    "url": "https://github.com/LucaFenner/expo-draw.git"
   },
   "keywords": [
     "react-native",
@@ -25,10 +22,7 @@
     "sketch",
     "signaturepad"
   ],
-  "author": "Eduardo Marangoni <marangoni_eduardo@icloud.com>",
-  "bugs": {
-    "url": "https://github.com/MarangoniEduardo/expo-draw/issues"
-  },
+  "author": "Eduardo Marangoni",
   "license": "MIT",
   "peerDependencies": {
     "expo": "*",
