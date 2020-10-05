@@ -1,5 +1,5 @@
 # Expo Draw
-Expo draw tool using react-native-svg. (Forked from [expo-draw](https://github.com/MarangoniEduardo/expo-draw))
+Expo draw tool using react-native-svg. (Forked from [rn-draw](https://github.com/jayeszee/rn-draw))
 
 [![rn-draw.gif](https://s1.gifyu.com/images/rn-draw.gif)](https://gifyu.com/image/pLIr)
 
@@ -7,7 +7,7 @@ Expo draw tool using react-native-svg. (Forked from [expo-draw](https://github.c
 
 First install [react-native-svg](https://github.com/react-native-community/react-native-svg) `expo install react-native-svg`
 
-Then install expo-draw with `npm install --save git+https://github.com/LucaFenner/expo-draw`
+Then install expo-draw with `npm install --save @marangonieduardo/expo-draw` or `npm install --save git+https://github.com/MarangoniEduardo/expo-draw`
 
 # How to use
 ```
@@ -46,10 +46,21 @@ import ExpoDraw from 'expo-draw'
 
 You can save a screenshot of your canvas using `takeSnapshotAsync`, the method from expo, like so:
 
-**enabled** [boolean] - if false you can't draw on box and It disable touch gesture, so you can use it easly on scrollview or inside other gestures component.
 ```
+import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
+  
+mySaveFx = async () => {
+	const signatureResult = await takeSnapshotAsync(this.refOfExpoDrawElement, {
+		result: 'tmpfile',
+		quality: 0.5,
+		format: 'png',
+	});
 
-# Tips when implementing
+  //The output will be a local tmpfile (uri)[String], with the current lines that were drawn. Therefore, you can save it or so! ;)
+  console.log(signatureResult);
+}
+
+```
 
 You can also save strokes array as json, for example, on firebase. In order to support all displays i recommend to use fixed dimensions:
 
@@ -85,4 +96,8 @@ You can also save strokes array as json, for example, on firebase. In order to s
 ```
 
 # Context on why I forked
-I was looking for a library to save as json on firebase a small draw/signature, but expo-draw only allow to save signature with snapshot. I edited it to save all lines in simple array with points. Also i have fixed some bugs and removed some unitilized dependencies.
+As of the time I was implementing rn-draw, with expo SDK 36.0.0. I faced an error on the Svg.G dependency, which I then fixed for my expo application.
+
+So, I hope I can help whoever is facing issues with the rn-draw for expo. If you want to use the original lib, here it is! -> [rn-draw](https://github.com/jayeszee/rn-draw)
+
+**Observation:** I'm using it for digital signature capturing in my app, if you are looking for something like this, I would say this lib is pretty ok for the mentioned purpose!
