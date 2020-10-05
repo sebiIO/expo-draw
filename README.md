@@ -20,6 +20,7 @@ import ExpoDraw from 'expo-draw'
   clear={(clear) => {this._clear = clear}}
   color={'#000000'}
   strokeWidth={4}
+  enabled={true}
   onChangeStrokes={(strokes) => console.log(strokes)}
 />
 
@@ -37,6 +38,8 @@ import ExpoDraw from 'expo-draw'
 **clear** [Func] - a function for passing the draw component's clear functionality
 
 **onChangeStrokes** [Func] - callback that is called when the draw changes.
+
+**enabled** [Boolean] - set if user can edit it. If false it disable also all touch event, so you can use it easly on GestureView like ScrollView.
 ```
 
 # Tips when implementing
@@ -59,6 +62,38 @@ mySaveFx = async () => {
 
 ```
 
+You can also save strokes array as json, for example, on firebase. In order to support all displays i recommend to use fixed dimensions:
+
+```
+
+  state = {
+    strokes: []
+  }
+
+  saveOnFirebase = () => {
+    firebase.firestore().collection('signature').doc().set({strokes})
+  }
+
+  render() {
+    return(
+      <View>
+        <ExpoDraw
+          strokes={[]}
+          containerStyle={{backgroundColor: 'rgba(0,0,0,0.01)', height: 300, width: 500}}
+          rewind={(undo) => {this._undo = undo}}
+          clear={(clear) => {this._clear = clear}}
+          color={'#000000'}
+          strokeWidth={4}
+          enabled={true}
+          onChangeStrokes={(strokes) => this.setState({strokes})}
+        />
+        <Button onPress={saveOnFirebase} title={"Save my signature"}/>
+      </View>
+    )
+  }
+
+
+```
 
 # Context on why I forked
 As of the time I was implementing rn-draw, with expo SDK 36.0.0. I faced an error on the Svg.G dependency, which I then fixed for my expo application.
