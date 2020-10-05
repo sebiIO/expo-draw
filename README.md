@@ -1,5 +1,5 @@
 # Expo Draw
-Expo draw tool using react-native-svg. (Forked from [expo-draw](https://github.com/EdoardoMarangoni/expo-draw))
+Expo draw tool using react-native-svg. (Forked from [expo-draw](https://github.com/MarangoniMarangoni/expo-draw))
 
 [![rn-draw.gif](https://s1.gifyu.com/images/rn-draw.gif)](https://gifyu.com/image/pLIr)
 
