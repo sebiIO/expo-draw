@@ -11,11 +11,11 @@ import Point from '../tools/point'
 export default class Whiteboard extends React.Component {
 
   constructor(props) {
-    super(props)
+    super()
     this.state = {
       tracker: 0,
       currentPoints: [],
-      previousStrokes: props.strokes || [],
+      previousStrokes: [],
       pen: new Pen(),
     }
 
@@ -35,9 +35,14 @@ export default class Whiteboard extends React.Component {
 
   }
 
-  componentDidUpdate(props) {
-    if (props.strokes && (this.state.previousStrokes !== props.strokes))
-      this.setState({ previousStrokes: props.strokes || this.state.previousStrokes })
+  componentDidMount () {
+    if(this.props.strokes)
+      this.setState({strokes: this.props.strokes})
+  }
+
+  componentDidUpdate () {
+    if(this.props.enabled == false && this.props.strokes !== undefined && this.props.strokes.length !== this.state.previousStrokes.length)
+      this.setState({ previousStrokes: this.props.strokes || this.state.previousStrokes })
   }
 
   rewind = () => {
