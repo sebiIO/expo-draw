@@ -36,7 +36,8 @@ export default class Whiteboard extends React.Component {
   }
 
   componentDidUpdate(props) {
-    this.setState({ previousStrokes: props.strokes || this.state.previousStrokes })
+    if (props.strokes && (this.state.previousStrokes !== props.strokes))
+      this.setState({ previousStrokes: props.strokes || this.state.previousStrokes })
   }
 
   rewind = () => {
