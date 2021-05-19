@@ -17,6 +17,8 @@ export default class Whiteboard extends React.Component {
       currentPoints: [],
       previousStrokes: [],
       pen: new Pen(),
+      strokeWidth: props.strokeWidth || 4,
+      strokeColor: props.color || '#00000'
     }
 
     this._panResponder = PanResponder.create({
@@ -28,9 +30,15 @@ export default class Whiteboard extends React.Component {
     })
     const rewind = props.rewind || function () { }
     const clear = props.clear || function () { }
+    const changeStroke = props.changeStroke || function () { }
+    const changeColor = props.changeColor || function () { }
+
+
     this._clientEvents = {
       rewind: rewind(this.rewind),
       clear: clear(this.clear),
+      changeStroke: changeStroke(this.changeStroke),
+      changeColor: changeColor(this.changeColor)
     }
 
   }
@@ -77,7 +85,7 @@ export default class Whiteboard extends React.Component {
     [x, y, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
 
     let newCurrentPoints = this.state.currentPoints
-    newCurrentPoints.push({ x, y, timestamp })
+    newCurrentPoints.points.push({ x, y, timestamp })
 
     this.setState({
       previousStrokes: this.state.previousStrokes,
@@ -100,12 +108,15 @@ export default class Whiteboard extends React.Component {
 
     var points = this.state.currentPoints
 
-    this.state.pen.addStroke(this.state.currentPoints)
+    this.state.pen.addStroke(this.state.currentPoints.points)
 
     this.setState({
       previousStrokes: [...strokes, points],
-      strokes: [],
-      currentPoints: [],
+      currentPoints: {
+        color: this.state.strokeColor,
+        width: this.state.strokeWidth,
+        points: []
+      },
       tracker: this.state.tracker + 1,
     })
     this._onChangeStrokes([...strokes, points])
@@ -120,6 +131,7 @@ export default class Whiteboard extends React.Component {
   }
 
   render() {
+    const {strokeWidth, strokeColor} = this.state;
     var props = this.props.enabled != false ? this._panResponder.panHandlers : {}
 
     return (
@@ -135,16 +147,16 @@ export default class Whiteboard extends React.Component {
               {this.state.previousStrokes.map((e) => {
                 var points = [];
 
-                for (var i in e) {
+                for (var i in e.points) {
                   let newPoint = new Point(e[i].x, e[i].y, e[i].timestamp)
                   points.push(newPoint)
                 }
 
                 return (<Path
-                  key={e[0].timestamp}
+                  key={e.points[0].timestamp}
                   d={this.state.pen.pointsToSvg(points)}
-                  stroke={this.props.color || '#000000'}
-                  strokeWidth={this.props.strokeWidth || 4}
+                  stroke={e.color}
+                  strokeWidth={e.width}
                   fill="none"
                 />)
               }
@@ -152,9 +164,9 @@ export default class Whiteboard extends React.Component {
               }
               <Path
                 key={this.state.tracker}
-                d={this.state.pen.pointsToSvg(this.state.currentPoints)}
-                stroke={this.props.color || "#000000"}
-                strokeWidth={this.props.strokeWidth || 4}
+                d={this.state.pen.pointsToSvg(this.state.currentPoints.points)}
+                stroke={this.state.currentPoints.strokeColor}
+                strokeWidth={this.state.currentPoints.strokeWidth}
                 fill="none"
               />
             </G>
