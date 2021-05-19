@@ -14,11 +14,19 @@ export default class Whiteboard extends React.Component {
     super()
     this.state = {
       tracker: 0,
-      currentPoints: [],
+      currentPoints: {
+        color: props.strokeColor || '#000000',
+        width: props.strokeWidth || 4,
+        points: []
+      },
       previousStrokes: [],
       pen: new Pen(),
       strokeWidth: props.strokeWidth || 4,
-      strokeColor: props.color || '#00000'
+      strokeColor: props.strokeColor || '#000000',
+      height: 0,
+      width: 0,
+      x: 0,
+      y: 0
     }
 
     this._panResponder = PanResponder.create({
@@ -43,13 +51,8 @@ export default class Whiteboard extends React.Component {
 
   }
 
-  componentDidMount () {
-    if(this.props.strokes)
-      this.setState({strokes: this.props.strokes})
-  }
-
-  componentDidUpdate () {
-    if(this.props.enabled == false && this.props.strokes !== undefined && this.props.strokes.length !== this.state.previousStrokes.length)
+  componentDidUpdate() {
+    if (this.props.enabled == false && this.props.strokes !== undefined && this.props.strokes.length !== this.state.previousStrokes.length)
       this.setState({ previousStrokes: this.props.strokes || this.state.previousStrokes })
   }
 
@@ -62,17 +65,37 @@ export default class Whiteboard extends React.Component {
 
     this.setState({
       previousStrokes: [...strokes],
-      currentPoints: [],
+      currentPoints: {
+        color: this.state.strokeColor,
+        width: this.state.strokeWidth,
+        points: []
+      },
       tracker: this.state.tracker - 1,
     })
 
     this._onChangeStrokes([...strokes])
   }
 
+  changeColor = (color) => {
+    const { currentPoints } = this.state;
+    currentPoints.color = color;
+    this.setState({ currentPoints, strokeColor: color })
+  }
+
+  changeStroke = (stroke) => {
+    const { currentPoints } = this.state;
+    currentPoints.width = stroke;
+    this.setState({ currentPoints, strokeWidth: stroke })
+  }
+
   clear = () => {
     this.setState({
       previousStrokes: [],
-      currentPoints: [],
+      currentPoints: {
+        color: this.state.strokeColor,
+        width: this.state.strokeWidth,
+        points: []
+      },
       tracker: 0,
     })
     this.state.pen.clear()
@@ -81,25 +104,30 @@ export default class Whiteboard extends React.Component {
 
   onTouch(evt) {
     if (this.props.enabled == false) return;
-    let x, y, timestamp
-    [x, y, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
+    var { height, width, x, y } = this.state;
+    
+    if(evt.nativeEvent.locationX < 5 || evt.nativeEvent.locationY < 5 || evt.nativeEvent.locationX > (width-5) || evt.nativeEvent.locationY > (height-5)) return;
+
+    let xf, yf, timestamp
+    [xf, yf, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
 
     let newCurrentPoints = this.state.currentPoints
-    newCurrentPoints.points.push({ x, y, timestamp })
+    newCurrentPoints.points.push({ x: xf, y: yf, timestamp })
 
     this.setState({
       previousStrokes: this.state.previousStrokes,
       currentPoints: newCurrentPoints,
       tracker: this.state.tracker
     })
+
   }
 
-  onResponderGrant(evt) {
-    this.onTouch(evt);
+  onResponderGrant(evt, gestureState) {
+    this.onTouch(evt, gestureState);
   }
 
-  onResponderMove(evt) {
-    this.onTouch(evt);
+  onResponderMove(evt, gestureState) {
+    this.onTouch(evt, gestureState);
   }
 
   onResponderRelease() {
@@ -122,7 +150,9 @@ export default class Whiteboard extends React.Component {
     this._onChangeStrokes([...strokes, points])
   }
 
-  _onLayoutContainer = (e) => {
+  onLayout = (e) => {
+    console.log(e.nativeEvent.layout)
+    this.setState({ height: e.nativeEvent.layout.height, width: e.nativeEvent.layout.width, x: e.nativeEvent.layout.x, y: e.nativeEvent.layout.y })
     this.state.pen.setOffset(e.nativeEvent.layout);
   }
 
@@ -131,12 +161,11 @@ export default class Whiteboard extends React.Component {
   }
 
   render() {
-    const {strokeWidth, strokeColor} = this.state;
     var props = this.props.enabled != false ? this._panResponder.panHandlers : {}
 
     return (
       <View
-        onLayout={this._onLayoutContainer}
+        onLayout={this.onLayout}
         style={[
           styles.drawContainer,
           this.props.containerStyle,
@@ -148,7 +177,7 @@ export default class Whiteboard extends React.Component {
                 var points = [];
 
                 for (var i in e.points) {
-                  let newPoint = new Point(e[i].x, e[i].y, e[i].timestamp)
+                  let newPoint = new Point(e.points[i].x, e.points[i].y, e.points[i].timestamp)
                   points.push(newPoint)
                 }
 
@@ -165,8 +194,8 @@ export default class Whiteboard extends React.Component {
               <Path
                 key={this.state.tracker}
                 d={this.state.pen.pointsToSvg(this.state.currentPoints.points)}
-                stroke={this.state.currentPoints.strokeColor}
-                strokeWidth={this.state.currentPoints.strokeWidth}
+                stroke={this.state.currentPoints.color}
+                strokeWidth={this.state.currentPoints.width}
                 fill="none"
               />
             </G>
