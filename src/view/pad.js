@@ -25,8 +25,8 @@ export default class Whiteboard extends React.Component {
       strokeColor: props.strokeColor || '#000000',
       height: 0,
       width: 0,
-      x: 0,
-      y: 0
+      px: 0,
+      py: 0
     }
 
     this._panResponder = PanResponder.create({
@@ -104,11 +104,12 @@ export default class Whiteboard extends React.Component {
 
   onTouch(evt) {
     if (this.props.enabled == false) return;
-    var { height, width, x, y } = this.state;
-    
-    if(evt.nativeEvent.locationX < 5 || evt.nativeEvent.locationY < 5 || evt.nativeEvent.locationX > (width-5) || evt.nativeEvent.locationY > (height-5)) return;
+    var { height, width, px, py } = this.state;
 
-    let xf, yf, timestamp
+    if(evt.nativeEvent.pageX < px || evt.nativeEvent.pageY < py || evt.nativeEvent.pageX > (width+px) || evt.nativeEvent.pageY > (height+py)) return;
+    
+
+    let xf, yf, timestamp;
     [xf, yf, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
 
     let newCurrentPoints = this.state.currentPoints
@@ -151,20 +152,23 @@ export default class Whiteboard extends React.Component {
   }
 
   onLayout = (e) => {
-    console.log(e.nativeEvent.layout)
-    this.setState({ height: e.nativeEvent.layout.height, width: e.nativeEvent.layout.width, x: e.nativeEvent.layout.x, y: e.nativeEvent.layout.y })
-    this.state.pen.setOffset(e.nativeEvent.layout);
+    e.target.measure( (fx, fy, width, height, px, py) => {
+      this.setState({ height, width, px, py, fx, fy })
+    })
   }
 
   _onChangeStrokes = (strokes) => {
     if (this.props.onChangeStrokes) this.props.onChangeStrokes(strokes)
   }
 
+  drawer = null;
+
   render() {
     var props = this.props.enabled != false ? this._panResponder.panHandlers : {}
 
     return (
       <View
+        ref={drawer => this.drawer = drawer}
         onLayout={this.onLayout}
         style={[
           styles.drawContainer,
