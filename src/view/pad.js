@@ -17,6 +17,7 @@ export default class Whiteboard extends React.Component {
       currentPoints: {
         color: props.strokeColor || '#000000',
         width: props.strokeWidth || 4,
+        box: { height: 0, width: 0 },
         points: []
       },
       previousStrokes: [],
@@ -62,12 +63,14 @@ export default class Whiteboard extends React.Component {
     strokes.pop()
 
     this.state.pen.rewindStroke()
+    const { height, width } = this.state;
 
     this.setState({
       previousStrokes: [...strokes],
       currentPoints: {
         color: this.state.strokeColor,
         width: this.state.strokeWidth,
+        box: { height, width },
         points: []
       },
       tracker: this.state.tracker - 1,
@@ -89,11 +92,13 @@ export default class Whiteboard extends React.Component {
   }
 
   clear = () => {
+    const { height, width } = this.state;
     this.setState({
       previousStrokes: [],
       currentPoints: {
         color: this.state.strokeColor,
         width: this.state.strokeWidth,
+        box: { height, width },
         points: []
       },
       tracker: 0,
@@ -106,8 +111,8 @@ export default class Whiteboard extends React.Component {
     if (this.props.enabled == false) return;
     var { height, width, px, py } = this.state;
 
-    if(evt.nativeEvent.pageX < px || evt.nativeEvent.pageY < py || evt.nativeEvent.pageX > (width+px) || evt.nativeEvent.pageY > (height+py)) return;
-    
+    if (evt.nativeEvent.pageX < px || evt.nativeEvent.pageY < py || evt.nativeEvent.pageX > (width + px) || evt.nativeEvent.pageY > (height + py)) return;
+
 
     let xf, yf, timestamp;
     [xf, yf, timestamp] = [evt.nativeEvent.locationX, evt.nativeEvent.locationY, evt.nativeEvent.timestamp]
@@ -134,8 +139,10 @@ export default class Whiteboard extends React.Component {
   onResponderRelease() {
     let strokes = this.state.previousStrokes
     if (this.state.currentPoints.length < 1) return
+    var { height, width } = this.state;
 
     var points = this.state.currentPoints
+    points.box = { height, width };
 
     this.state.pen.addStroke(this.state.currentPoints.points)
 
@@ -144,6 +151,7 @@ export default class Whiteboard extends React.Component {
       currentPoints: {
         color: this.state.strokeColor,
         width: this.state.strokeWidth,
+        box: { height, width },
         points: []
       },
       tracker: this.state.tracker + 1,
@@ -152,8 +160,10 @@ export default class Whiteboard extends React.Component {
   }
 
   onLayout = (e) => {
-    e.target.measure( (fx, fy, width, height, px, py) => {
-      this.setState({ height, width, px, py, fx, fy })
+    e.target.measure((fx, fy, width, height, px, py) => {
+      const currentPoints = this.state.currentPoints;
+      currentPoints.box = {height, width}
+      this.setState({ height, width, px, py, fx, fy, currentPoints })
     })
   }
 
@@ -165,6 +175,7 @@ export default class Whiteboard extends React.Component {
 
   render() {
     var props = this.props.enabled != false ? this._panResponder.panHandlers : {}
+    const {height, width} = this.state;
 
     return (
       <View
@@ -178,16 +189,9 @@ export default class Whiteboard extends React.Component {
           <Svg style={styles.drawSurface}>
             <G>
               {this.state.previousStrokes.map((e) => {
-                var points = [];
-
-                for (var i in e.points) {
-                  let newPoint = new Point(e.points[i].x, e.points[i].y, e.points[i].timestamp)
-                  points.push(newPoint)
-                }
-
                 return (<Path
                   key={e.points[0].timestamp}
-                  d={this.state.pen.pointsToSvg(points)}
+                  d={this.state.pen.pointsToSvg(e, {height, width})}
                   stroke={e.color}
                   strokeWidth={e.width}
                   fill="none"
@@ -197,7 +201,7 @@ export default class Whiteboard extends React.Component {
               }
               <Path
                 key={this.state.tracker}
-                d={this.state.pen.pointsToSvg(this.state.currentPoints.points)}
+                d={this.state.pen.pointsToSvg(this.state.currentPoints, {height, width})}
                 stroke={this.state.currentPoints.color}
                 strokeWidth={this.state.currentPoints.width}
                 fill="none"

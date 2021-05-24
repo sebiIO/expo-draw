@@ -48,7 +48,15 @@ export default class Pen {
     this._offsetY = options.y;
   }
 
-  pointsToSvg(points) {
+  pointsToSvg(data, currentBox) {
+    const points = [];
+    const xProp = currentBox.width / data.box.width;
+    const yProp = currentBox.height / data.box.height;
+
+    for(var i in data.points) {
+      points.push({x: data.points[i].x * xProp, y: data.points[i].y * yProp})
+    }
+
     if (points.length > 0) {
       var path = points.reduce((acc, point, i, a) => i === 0
       ? `M ${point.x},${point.y}`
