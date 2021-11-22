@@ -41,13 +41,15 @@ export default class Whiteboard extends React.Component {
     const clear = props.clear || function () { }
     const changeStroke = props.changeStroke || function () { }
     const changeColor = props.changeColor || function () { }
+    const updatePoints = props.updatePoints || function () { }
 
 
     this._clientEvents = {
       rewind: rewind(this.rewind),
       clear: clear(this.clear),
       changeStroke: changeStroke(this.changeStroke),
-      changeColor: changeColor(this.changeColor)
+      changeColor: changeColor(this.changeColor),
+      updatePoints: updatePoints(this.updatePoints)
     }
 
   }
@@ -89,6 +91,12 @@ export default class Whiteboard extends React.Component {
     const { currentPoints } = this.state;
     currentPoints.width = stroke;
     this.setState({ currentPoints, strokeWidth: stroke })
+  }
+
+  updatePoints = (points) => {
+    const { currentPoints } = this.state;
+    currentPoints.points = points;
+    this.setState(currentPoints);
   }
 
   clear = () => {
